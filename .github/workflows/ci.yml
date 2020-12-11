@@ -63,8 +63,8 @@ jobs:
           echo "CABAL=cabal" >> $GITHUB_ENV
           CABALHOME=$HOME/.cabal
           echo "CABALHOME=$HOME/.cabal" >> $GITHUB_ENV
-          export PATH="$CABALHOME/bin:$PATH"
-          echo "export PATH=\"$CABALHOME/bin:$PATH\"" >> $GITHUB_ENV
+          PATH="$CABALHOME/bin:$PATH"
+          echo "PATH=\"$CABALHOME/bin:$PATH\"" >> $GITHUB_ENV
           TOP=$(pwd)
           echo "TOP=$(pwd)" >> $GITHUB_ENV
           HCNUMVER=$(${HC} --numeric-version|perl -ne '/^(\d+)\.(\d+)\.(\d+)(\.(\d+))?$/; print(10000 * $1 + 100 * $2 + ($3 == 0 ? $5 != 1 : $3))')
