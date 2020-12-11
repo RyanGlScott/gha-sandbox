@@ -8,7 +8,7 @@
 #
 # For more information, see https://github.com/haskell-CI/haskell-ci
 #
-# version: 0.11.20201205
+# version: 0.11.20201211
 #
 name: haskell-ci
 on:
@@ -51,21 +51,34 @@ jobs:
       - name: Before install
         run: |
           HC=$(echo "/opt/$CC/bin/ghc" | sed 's/-/\//')
+          echo "HC=$(echo \"/opt/$CC/bin/ghc\" | sed 's/-/\\//')" >> $GITHUB_ENV
           WITHCOMPILER="-w $HC"
+          echo "WITHCOMPILER=\"-w $HC\"" >> $GITHUB_ENV
           HADDOCK=$(echo "/opt/$CC/bin/haddock" | sed 's/-/\//')
+          echo "HADDOCK=$(echo \"/opt/$CC/bin/haddock\" | sed 's/-/\\//')" >> $GITHUB_ENV
           HCPKG="$HC-pkg"
+          echo "HCPKG=\"$HC-pkg\"" >> $GITHUB_ENV
           unset CC
           CABAL=/opt/ghc/bin/cabal
+          echo "CABAL=/opt/ghc/bin/cabal" >> $GITHUB_ENV
           CABALHOME=$HOME/.cabal
+          echo "CABALHOME=$HOME/.cabal" >> $GITHUB_ENV
           export PATH="$CABALHOME/bin:$PATH"
+          echo "export PATH=\"$CABALHOME/bin:$PATH\"" >> $GITHUB_ENV
           TOP=$(pwd)
+          echo "TOP=$(pwd)" >> $GITHUB_ENV
           HCNUMVER=$(${HC} --numeric-version|perl -ne '/^(\d+)\.(\d+)\.(\d+)(\.(\d+))?$/; print(10000 * $1 + 100 * $2 + ($3 == 0 ? $5 != 1 : $3))')
+          echo "HCNUMVER=$(${HC} --numeric-version|perl -ne '/^(\\d+)\\.(\\d+)\\.(\\d+)(\\.(\\d+))?$/; print(10000 * $1 + 100 * $2 + ($3 == 0 ? $5 != 1 : $3))')" >> $GITHUB_ENV
           echo $HCNUMVER
           CABAL="$CABAL -vnormal+nowrap"
+          echo "CABAL=\"$CABAL -vnormal+nowrap\"" >> $GITHUB_ENV
           set -o pipefail
           TEST=--enable-tests
+          echo "TEST=--enable-tests" >> $GITHUB_ENV
           BENCH=--enable-benchmarks
+          echo "BENCH=--enable-benchmarks" >> $GITHUB_ENV
           HEADHACKAGE=false
+          echo "HEADHACKAGE=false" >> $GITHUB_ENV
           rm -f $CABALHOME/config
           echo "verbose: normal +nowrap +markoutput"          >> $CABALHOME/config
           echo "remote-build-reporting: anonymous"            >> $CABALHOME/config
@@ -111,6 +124,7 @@ jobs:
       - name: Script
         run: |
           DISTDIR=$(mktemp -d /tmp/dist-test.XXXX)
+          echo "DISTDIR=$(mktemp -d /tmp/dist-test.XXXX)" >> $GITHUB_ENV
           ${CABAL} v2-sdist all
           mv dist-newstyle/sdist/*.tar.gz ${DISTDIR}/
           cd ${DISTDIR} || false
@@ -135,5 +149,5 @@ jobs:
           rm -f cabal.project.local
           ${CABAL} v2-build $WITHCOMPILER --disable-tests --disable-benchmarks all
 
-# REGENDATA ("0.11.20201205",["github-actions","cabal.project"])
+# REGENDATA ("0.11.20201211",["github-actions","cabal.project"])
 # EOF
