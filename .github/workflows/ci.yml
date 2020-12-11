@@ -50,17 +50,15 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.ghc }}
       - name: Before install
         run: |
-          HC=$(echo "/opt/$CC/bin/ghc" | sed 's/-/\//')
-          echo "HC=$(echo \"/opt/$CC/bin/ghc\" | sed 's/-/\\//')" >> $GITHUB_ENV
+          HC="${{ matrix.ghc }}"
+          echo "HC=\"${{ matrix.ghc }}\"" >> $GITHUB_ENV
           WITHCOMPILER="-w $HC"
           echo "WITHCOMPILER=\"-w $HC\"" >> $GITHUB_ENV
-          HADDOCK=$(echo "/opt/$CC/bin/haddock" | sed 's/-/\//')
-          echo "HADDOCK=$(echo \"/opt/$CC/bin/haddock\" | sed 's/-/\\//')" >> $GITHUB_ENV
           HCPKG="$HC-pkg"
           echo "HCPKG=\"$HC-pkg\"" >> $GITHUB_ENV
           unset CC
-          CABAL=/opt/ghc/bin/cabal
-          echo "CABAL=/opt/ghc/bin/cabal" >> $GITHUB_ENV
+          CABAL="${{ matrix.cabal }}"
+          echo "CABAL=\"${{ matrix.cabal }}\"" >> $GITHUB_ENV
           CABALHOME=$HOME/.cabal
           echo "CABALHOME=$HOME/.cabal" >> $GITHUB_ENV
           export PATH="$CABALHOME/bin:$PATH"
@@ -72,6 +70,8 @@ jobs:
           echo $HCNUMVER
           CABAL="$CABAL -vnormal+nowrap"
           echo "CABAL=\"$CABAL -vnormal+nowrap\"" >> $GITHUB_ENV
+          HADDOCK=$(echo "/opt/ghc/$HCNUMVER/bin/haddock" | sed 's/-/\//')
+          echo "HADDOCK=$(echo \"/opt/ghc/$HCNUMVER/bin/haddock\" | sed 's/-/\\//')" >> $GITHUB_ENV
           set -o pipefail
           TEST=--enable-tests
           echo "TEST=--enable-tests" >> $GITHUB_ENV
@@ -119,8 +119,8 @@ jobs:
           ${CABAL} v2-freeze $WITHCOMPILER ${TEST} ${BENCH}
           cat cabal.project.freeze | sed -E 's/^(constraints: *| *)//' | sed 's/any.//'
           rm  cabal.project.freeze
-          v2-build $WITHCOMPILER ${TEST} ${BENCH} --dep -j2 all
-          v2-build $WITHCOMPILER --disable-tests --disable-benchmarks --dep -j2 all
+          ${CABAL} v2-build $WITHCOMPILER ${TEST} ${BENCH} --dep -j2 all
+          ${CABAL} v2-build $WITHCOMPILER --disable-tests --disable-benchmarks --dep -j2 all
       - name: Script
         run: |
           DISTDIR=$(mktemp -d /tmp/dist-test.XXXX)
