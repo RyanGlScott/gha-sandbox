@@ -50,21 +50,17 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.ghc }}
       - name: Before install
         run: |
-          MATRIX_GHC="${{ matrix.ghc }}"
-          echo "MATRIX_GHC=\"${{ matrix.ghc }}\"" >> $GITHUB_ENV
-          MATRIX_CABAL="${{ matrix.cabal }}"
-          echo "MATRIX_CABAL=\"${{ matrix.cabal }}\"" >> $GITHUB_ENV
-          HC=/opt/ghc/$MATRIX_GHC/bin/ghc
-          echo "HC=/opt/ghc/$MATRIX_GHC/bin/ghc" >> $GITHUB_ENV
+          HC=ghc
+          echo "HC=ghc" >> $GITHUB_ENV
           WITHCOMPILER="-w $HC"
           echo "WITHCOMPILER=\"-w $HC\"" >> $GITHUB_ENV
-          HADDOCK=/opt/ghc/$MATRIX_GHC/bin/haddock
-          echo "HADDOCK=/opt/ghc/$MATRIX_GHC/bin/haddock" >> $GITHUB_ENV
+          HADDOCK=haddock
+          echo "HADDOCK=haddock" >> $GITHUB_ENV
           HCPKG="$HC-pkg"
           echo "HCPKG=\"$HC-pkg\"" >> $GITHUB_ENV
           unset CC
-          CABAL=/opt/cabal/$MATRIX_CABAL/bin/cabal
-          echo "CABAL=/opt/cabal/$MATRIX_CABAL/bin/cabal" >> $GITHUB_ENV
+          CABAL=cabal
+          echo "CABAL=cabal" >> $GITHUB_ENV
           CABALHOME=$HOME/.cabal
           echo "CABALHOME=$HOME/.cabal" >> $GITHUB_ENV
           export PATH="$CABALHOME/bin:$PATH"
