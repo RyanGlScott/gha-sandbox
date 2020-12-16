@@ -25,10 +25,9 @@ jobs:
     continue-on-error: ${{ matrix.continue-on-error }}
     strategy:
       matrix:
-        continue-on-error:
-          - false
         include:
-          - ghc: 8.10.2
+          - continue-on-error: false
+            ghc: 8.10.2
           - continue-on-error: true
             ghc: 8.8.4
       fail-fast: false
