@@ -1,1 +1,1 @@
-hlint: True
+allow-failures: <8.10
