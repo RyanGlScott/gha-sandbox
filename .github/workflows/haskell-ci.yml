@@ -29,8 +29,7 @@ jobs:
           - false
         include:
           - ghc: 8.10.2
-          - continue-on-error: true
-            ghc: 8.8.4
+          - ghc: 8.8.4
       fail-fast: false
     steps:
       - name: apt
