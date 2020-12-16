@@ -22,14 +22,14 @@ jobs:
     runs-on: ubuntu-18.04
     container:
       image: buildpack-deps:bionic
-    continue-on-error: ${{ matrix.continue-on-error }}
+    continue-on-error: ${{ matrix.allow-failure }}
     strategy:
       matrix:
-        continue-on-error:
-          - false
         include:
           - ghc: 8.10.2
+            allow-failure: false
           - ghc: 8.8.4
+            allow-failure: true
       fail-fast: false
     steps:
       - name: apt
