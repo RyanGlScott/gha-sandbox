@@ -94,8 +94,7 @@ jobs:
       - name: cache (tools)
         uses: actions/cache@v2
         with:
-          key:
-            - ${{ runner.os }}-${{ matrix.ghc }}-tools
+          key: ${{ runner.os }}-${{ matrix.ghc }}-tools
           path:
             - ~/.cabal/store-tools
             - ~/.hlint
@@ -116,8 +115,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
         with:
-          path:
-            - source
+          path: source
       - name: sdist
         run: |
           mkdir -p sdist
@@ -148,12 +146,9 @@ jobs:
       - name: cache
         uses: actions/cache@v2
         with:
-          key:
-            - ${{ runner.os }}-${{ matrix.ghc }}-${{ github.sha }}
-          path:
-            - ~/.cabal/store
-          restore-keys:
-            - ${{ runner.os }}-${{ matrix.ghc }}-
+          key: ${{ runner.os }}-${{ matrix.ghc }}-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ matrix.ghc }}-
+          path: ~/.cabal/store
       - name: install dependencies
         run: |
           $CABAL v2-build $ARG_COMPILER --disable-tests --disable-benchmarks --dependencies-only -j2 all
