@@ -27,7 +27,7 @@ jobs:
     steps:
       - name: IRC success notification (irc.freenode.org#haskell-lens)
         uses: Gottox/irc-message-action@v1.1
-        if: needs.main.result == 'success'
+        if: needs.linux.result == 'success'
         with:
           channel: "#haskell-lens"
           message: "\x0313gha-sandbox\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The build succeeded."
@@ -35,7 +35,7 @@ jobs:
           server: irc.freenode.org
       - name: IRC failure notification (irc.freenode.org#haskell-lens)
         uses: Gottox/irc-message-action@v1.1
-        if: needs.main.result != 'success'
+        if: needs.linux.result != 'success'
         with:
           channel: "#haskell-lens"
           message: "\x0313gha-sandbox\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The build failed."
