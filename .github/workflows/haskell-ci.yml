@@ -8,40 +8,15 @@
 #
 # For more information, see https://github.com/haskell-CI/haskell-ci
 #
-# version: 0.11.20201221
+# version: 0.11.20210207
 #
-# REGENDATA ("0.11.20201221",["--config=cabal.haskell-ci","github","cabal.project"])
+# REGENDATA ("0.11.20210207",["--config=cabal.haskell-ci","github","cabal.project"])
 #
 name: Haskell-CI
 on:
   - push
   - pull_request
 jobs:
-  irc:
-    name: Haskell-CI (IRC notification)
-    runs-on: ubuntu-18.04
-    needs:
-      - linux
-    if: ${{ always() && (github.repository == 'RyanGlScott/gha-sandbox') }}
-    strategy:
-      fail-fast: false
-    steps:
-      - name: IRC success notification (irc.freenode.org#haskell-lens)
-        uses: Gottox/irc-message-action@v1.1
-        if: needs.linux.result == 'success'
-        with:
-          channel: "#haskell-lens"
-          message: "\x0313gha-sandbox\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The build succeeded."
-          nickname: github-actions
-          server: irc.freenode.org
-      - name: IRC failure notification (irc.freenode.org#haskell-lens)
-        uses: Gottox/irc-message-action@v1.1
-        if: needs.linux.result != 'success'
-        with:
-          channel: "#haskell-lens"
-          message: "\x0313gha-sandbox\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The build failed."
-          nickname: github-actions
-          server: irc.freenode.org
   linux:
     name: Haskell-CI Linux - GHC ${{ matrix.ghc }}
     runs-on: ubuntu-18.04
@@ -51,7 +26,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - ghc: 8.10.2
+          - ghc: 8.10.3
             allow-failure: false
       fail-fast: false
     steps:
@@ -79,6 +54,7 @@ jobs:
           echo "HCNUMVER=$HCNUMVER" >> $GITHUB_ENV
           echo "ARG_TESTS=--enable-tests" >> $GITHUB_ENV
           echo "ARG_BENCH=--enable-benchmarks" >> $GITHUB_ENV
+          echo "HEADHACKAGE=false" >> $GITHUB_ENV
           echo "ARG_COMPILER=--ghc --with-compiler=/opt/ghc/$GHC_VERSION/bin/ghc" >> $GITHUB_ENV
           echo "GHCJSARITH=0" >> $GITHUB_ENV
         env:
@@ -91,7 +67,7 @@ jobs:
           mkdir -p $CABAL_DIR
           cat >> $CABAL_CONFIG <<EOF
           remote-build-reporting: anonymous
-          write-ghc-environment-files: always
+          write-ghc-environment-files: never
           remote-repo-cache: $CABAL_DIR/packages
           logs-dir:          $CABAL_DIR/logs
           world-file:        $CABAL_DIR/world
@@ -114,11 +90,6 @@ jobs:
       - name: update cabal index
         run: |
           $CABAL v2-update -v
-      - name: cache (tools)
-        uses: actions/cache@v2
-        with:
-          key: ${{ runner.os }}-${{ matrix.ghc }}-tools-c71e24d1
-          path: ~/.haskell-ci-tools
       - name: install cabal-plan
         run: |
           mkdir -p $HOME/.cabal/bin
@@ -127,12 +98,7 @@ jobs:
           xz -d < cabal-plan.xz > $HOME/.cabal/bin/cabal-plan
           rm -f cabal-plan.xz
           chmod a+x $HOME/.cabal/bin/cabal-plan
-      - name: install hlint
-        run: |
-          HLINTVER=$(cd /tmp && (${CABAL} v2-install -v $ARG_COMPILER --dry-run hlint  --constraint='hlint ==3.2.*' |  perl -ne 'if (/\bhlint-(\d+(\.\d+)*)\b/) { print "$1"; last; }')); echo "HLint version $HLINTVER"
-          if [ ! -e $HOME/.haskell-ci-tools/hlint-$HLINTVER/hlint ]; then echo "Downloading HLint version $HLINTVER"; mkdir -p $HOME/.haskell-ci-tools; curl --write-out 'Status Code: %{http_code} Redirects: %{num_redirects} Total time: %{time_total} Total Dsize: %{size_download}\n' --silent --location --output $HOME/.haskell-ci-tools/hlint-$HLINTVER.tar.gz "https://github.com/ndmitchell/hlint/releases/download/v$HLINTVER/hlint-$HLINTVER-x86_64-linux.tar.gz"; tar -xzv -f $HOME/.haskell-ci-tools/hlint-$HLINTVER.tar.gz -C $HOME/.haskell-ci-tools; fi
-          mkdir -p $CABAL_DIR/bin && ln -sf "$HOME/.haskell-ci-tools/hlint-$HLINTVER/hlint" $CABAL_DIR/bin/hlint
-          hlint --version
+          cabal-plan --version
       - name: checkout
         uses: actions/checkout@v2
         with:
@@ -179,13 +145,10 @@ jobs:
           $CABAL v2-build $ARG_COMPILER --disable-tests --disable-benchmarks all
       - name: build
         run: |
-          $CABAL v2-build $ARG_COMPILER $ARG_TESTS $ARG_BENCH all
+          $CABAL v2-build $ARG_COMPILER $ARG_TESTS $ARG_BENCH all --write-ghc-environment-files=always
       - name: tests
         run: |
           $CABAL v2-test $ARG_COMPILER $ARG_TESTS $ARG_BENCH all --test-show-details=direct
-      - name: hlint
-        run: |
-          (cd ${PKGDIR_gha_sandbox} && hlint src)
       - name: cabal check
         run: |
           cd ${PKGDIR_gha_sandbox} || false
