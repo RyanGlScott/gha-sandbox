@@ -1,8 +1,8 @@
 diff --git a/.github/workflows/haskell-ci.yml b/.github/workflows/haskell-ci.yml
-index fc3b51e..217aa70 100644
+index fc3b51e..b315950 100644
 --- a/.github/workflows/haskell-ci.yml
 +++ b/.github/workflows/haskell-ci.yml
-@@ -26,19 +26,27 @@ jobs:
+@@ -26,19 +26,28 @@ jobs:
      strategy:
        matrix:
          include:
@@ -24,8 +24,9 @@ index fc3b51e..217aa70 100644
 -          apt-get install -y ghc-$GHC_VERSION cabal-install-3.2
 +          if [ "${{ matrix.ghc-source }}" = "ghcup" ]; then
 +            curl -sL https://downloads.haskell.org/ghcup/0.1.12/x86_64-linux-ghcup-0.1.12 > ghcup
-+            ghcup install ghc $GHC_VERSION
-+            ghcup install cabal 3.2.0.0
++            chmod a+x ghcup
++            ./ghcup install ghc $GHC_VERSION
++            ./ghcup install cabal 3.2.0.0
 +          else
 +            apt-get update
 +            apt-get install -y --no-install-recommends gnupg ca-certificates dirmngr curl git software-properties-common
@@ -36,7 +37,7 @@ index fc3b51e..217aa70 100644
          env:
            GHC_VERSION: ${{ matrix.ghc }}
        - name: Set PATH and environment variables
-@@ -47,17 +55,25 @@ jobs:
+@@ -47,17 +56,25 @@ jobs:
            echo "LANG=C.UTF-8" >> $GITHUB_ENV
            echo "CABAL_DIR=$HOME/.cabal" >> $GITHUB_ENV
            echo "CABAL_CONFIG=$HOME/.cabal/config" >> $GITHUB_ENV

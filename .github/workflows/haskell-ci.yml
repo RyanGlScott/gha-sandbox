@@ -38,8 +38,9 @@ jobs:
         run: |
           if [ "${{ matrix.ghc-source }}" = "ghcup" ]; then
             curl -sL https://downloads.haskell.org/ghcup/0.1.12/x86_64-linux-ghcup-0.1.12 > ghcup
-            ghcup install ghc $GHC_VERSION
-            ghcup install cabal 3.2.0.0
+            chmod a+x ghcup
+            ./ghcup install ghc $GHC_VERSION
+            ./ghcup install cabal 3.2.0.0
           else
             apt-get update
             apt-get install -y --no-install-recommends gnupg ca-certificates dirmngr curl git software-properties-common
