@@ -36,7 +36,7 @@ jobs:
     steps:
       - name: apt
         run: |
-          if [ "${{ matrix.ghc-source }}" == "ghcup" ]; then
+          if [ "${{ matrix.ghc-source }}" = "ghcup" ]; then
             curl -sL https://downloads.haskell.org/ghcup/0.1.12/x86_64-linux-ghcup-0.1.12 > ghcup
             ghcup install ghc $GHC_VERSION
             ghcup install cabal 3.2.0.0
@@ -55,7 +55,7 @@ jobs:
           echo "LANG=C.UTF-8" >> $GITHUB_ENV
           echo "CABAL_DIR=$HOME/.cabal" >> $GITHUB_ENV
           echo "CABAL_CONFIG=$HOME/.cabal/config" >> $GITHUB_ENV
-          if [ "${{ matrix.ghc-source }}" == "ghcup" ]; then
+          if [ "${{ matrix.ghc-source }}" = "ghcup" ]; then
             HC=$HOME/.ghcup/bin/ghc-$GHC_VERSION
             echo "HC=$HC" >> $GITHUB_ENV
             echo "HCPKG=$HOME/.ghcup/bin/ghc-pkg-$GHC_VERSION" >> $GITHUB_ENV

@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/haskell-ci.yml b/.github/workflows/haskell-ci.yml
-index fc3b51e..9532ffb 100644
+index fc3b51e..217aa70 100644
 --- a/.github/workflows/haskell-ci.yml
 +++ b/.github/workflows/haskell-ci.yml
 @@ -26,19 +26,27 @@ jobs:
@@ -22,7 +22,7 @@ index fc3b51e..9532ffb 100644
 -          apt-add-repository -y 'ppa:hvr/ghc'
 -          apt-get update
 -          apt-get install -y ghc-$GHC_VERSION cabal-install-3.2
-+          if [ "${{ matrix.ghc-source }}" == "ghcup" ]; then
++          if [ "${{ matrix.ghc-source }}" = "ghcup" ]; then
 +            curl -sL https://downloads.haskell.org/ghcup/0.1.12/x86_64-linux-ghcup-0.1.12 > ghcup
 +            ghcup install ghc $GHC_VERSION
 +            ghcup install cabal 3.2.0.0
@@ -45,7 +45,7 @@ index fc3b51e..9532ffb 100644
 -          echo "HCPKG=/opt/ghc/$GHC_VERSION/bin/ghc-pkg" >> $GITHUB_ENV
 -          echo "HADDOCK=/opt/ghc/$GHC_VERSION/bin/haddock" >> $GITHUB_ENV
 -          echo "CABAL=/opt/cabal/3.2/bin/cabal -vnormal+nowrap" >> $GITHUB_ENV
-+          if [ "${{ matrix.ghc-source }}" == "ghcup" ]; then
++          if [ "${{ matrix.ghc-source }}" = "ghcup" ]; then
 +            HC=$HOME/.ghcup/bin/ghc-$GHC_VERSION
 +            echo "HC=$HC" >> $GITHUB_ENV
 +            echo "HCPKG=$HOME/.ghcup/bin/ghc-pkg-$GHC_VERSION" >> $GITHUB_ENV
