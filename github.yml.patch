@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/haskell-ci.yml b/.github/workflows/haskell-ci.yml
-index fc3b51e..b315950 100644
+index b356f14..9457fc3 100644
 --- a/.github/workflows/haskell-ci.yml
 +++ b/.github/workflows/haskell-ci.yml
 @@ -26,19 +26,28 @@ jobs:
@@ -17,19 +17,18 @@ index fc3b51e..b315950 100644
      steps:
        - name: apt
          run: |
--          apt-get update
+           apt-get update
 -          apt-get install -y --no-install-recommends gnupg ca-certificates dirmngr curl git software-properties-common
 -          apt-add-repository -y 'ppa:hvr/ghc'
 -          apt-get update
 -          apt-get install -y ghc-$GHC_VERSION cabal-install-3.2
++          apt-get install -y --no-install-recommends gnupg ca-certificates dirmngr curl git software-properties-common libnuma-dev
 +          if [ "${{ matrix.ghc-source }}" = "ghcup" ]; then
 +            curl -sL https://downloads.haskell.org/ghcup/0.1.12/x86_64-linux-ghcup-0.1.12 > ghcup
 +            chmod a+x ghcup
 +            ./ghcup install ghc $GHC_VERSION
 +            ./ghcup install cabal 3.2.0.0
 +          else
-+            apt-get update
-+            apt-get install -y --no-install-recommends gnupg ca-certificates dirmngr curl git software-properties-common
 +            apt-add-repository -y 'ppa:hvr/ghc'
 +            apt-get update
 +            apt-get install -y ghc-$GHC_VERSION cabal-install-3.2

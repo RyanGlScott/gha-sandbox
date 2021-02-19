@@ -8,9 +8,9 @@
 #
 # For more information, see https://github.com/haskell-CI/haskell-ci
 #
-# version: 0.11.20210214
+# version: 0.11.20210218
 #
-# REGENDATA ("0.11.20210214",["--config=cabal.haskell-ci","github","cabal.project"])
+# REGENDATA ("0.11.20210218",["--config=cabal.haskell-ci","github","cabal.project"])
 #
 name: Haskell-CI
 on:
@@ -36,14 +36,14 @@ jobs:
     steps:
       - name: apt
         run: |
+          apt-get update
+          apt-get install -y --no-install-recommends gnupg ca-certificates dirmngr curl git software-properties-common libnuma-dev
           if [ "${{ matrix.ghc-source }}" = "ghcup" ]; then
             curl -sL https://downloads.haskell.org/ghcup/0.1.12/x86_64-linux-ghcup-0.1.12 > ghcup
             chmod a+x ghcup
             ./ghcup install ghc $GHC_VERSION
             ./ghcup install cabal 3.2.0.0
           else
-            apt-get update
-            apt-get install -y --no-install-recommends gnupg ca-certificates dirmngr curl git software-properties-common
             apt-add-repository -y 'ppa:hvr/ghc'
             apt-get update
             apt-get install -y ghc-$GHC_VERSION cabal-install-3.2
