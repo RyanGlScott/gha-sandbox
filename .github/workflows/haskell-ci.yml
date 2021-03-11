@@ -175,6 +175,13 @@ jobs:
       - name: tests
         run: |
           if [ $((! GHCJSARITH)) -ne 0 ] ; then $CABAL v2-test $ARG_COMPILER $ARG_TESTS $ARG_BENCH all --test-show-details=direct ; fi
+          pkgdir() {
+            case $1 in
+              gha-sandbox) echo ${PKGDIR_gha_sandbox} ;;
+            esac
+          }
+
+          if [ $((GHCJSARITH)) -ne 0 ] ; then cabal-plan list-bins '*:test:*' | while read -r line; do testpkg=$(echo "$line" | perl -pe 's/:.*//'); testexe=$(echo "$line" | awk '{ print $2 }'); echo "testing $textexe in package $textpkg"; (cd "$(pkgdir $testpkg)" && nodejs "$testexe".jsexe/all.js); done ; fi
       - name: cabal check
         run: |
           cd ${PKGDIR_gha_sandbox} || false
