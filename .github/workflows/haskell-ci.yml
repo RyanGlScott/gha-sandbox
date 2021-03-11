@@ -37,9 +37,11 @@ jobs:
       - name: Set GHCJS environment variables
         run: |
           if echo $CC | grep -q ghcjs; then
-              GHCJS=true; GHCJSARITH=1;
+          echo "GHCJS=true" >> $GITHUB_ENV
+          echo "GHCJSARITH=1" >> $GITHUB_ENV
           else
-              GHCJS=false; GHCJSARITH=0;
+          echo "GHCJS=false" >> $GITHUB_ENV
+          echo "GHCJSARITH=0" >> $GITHUB_ENV
           fi
         env:
           CC: ${{ matrix.compiler }}
