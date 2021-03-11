@@ -49,7 +49,7 @@ jobs:
           apt-get install -y --no-install-recommends gnupg ca-certificates dirmngr curl git software-properties-common
           apt-add-repository -y 'ppa:hvr/ghc'
           if [ $((GHCJSARITH)) -ne 0 ] ; then apt-add-repository -y 'ppa:hvr/ghcjs' ; fi
-          if [ $((GHCJSARITH)) -ne 0 ] ; then deb https://deb.nodesource.com/node_10.x bionic main ; fi
+          if [ $((GHCJSARITH)) -ne 0 ] ; then apt-add-repository -y 'deb https://deb.nodesource.com/node_10.x bionic main' ; fi
           apt-get update
           if [ $((GHCJSARITH)) -ne 0 ] ; then apt-get install -y $CC cabal-install-3.4 ghc-8.4.4 nodejs ; else apt-get install -y $CC cabal-install-3.4 ; fi
         env:
