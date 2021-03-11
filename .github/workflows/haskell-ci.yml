@@ -26,24 +26,38 @@ jobs:
     strategy:
       matrix:
         include:
+          - compiler: ghcjs-8.4
+            allow-failure: false
           - compiler: ghc-9.0.1
             allow-failure: false
           - compiler: ghc-8.10.4
             allow-failure: false
       fail-fast: false
     steps:
+      - name: Set GHCJS environment variables
+        run: |
+          if echo $CC | grep -q ghcjs; then
+              GHCJS=true; GHCJSARITH=1;
+          else
+              GHCJS=false; GHCJSARITH=0;
+          fi
+        env:
+          CC: ${{ matrix.compiler }}
       - name: apt
         run: |
           apt-get update
           apt-get install -y --no-install-recommends gnupg ca-certificates dirmngr curl git software-properties-common
           apt-add-repository -y 'ppa:hvr/ghc'
+          if [ $((GHCJSARITH)) -ne 0 ] ; then apt-add-repository -y 'ppa:hvr/ghcjs' ; fi
+          if [ $((GHCJSARITH)) -ne 0 ] ; then deb https://deb.nodesource.com/node_10.x bionic main ; fi
           apt-get update
-          apt-get install -y $CC cabal-install-3.4
+          if [ $((GHCJSARITH)) -ne 0 ] ; then apt-get install -y $CC cabal-install-3.4 ghc-8.4.4 nodejs ; else apt-get install -y $CC cabal-install-3.4 ; fi
         env:
           CC: ${{ matrix.compiler }}
       - name: Set PATH and environment variables
         run: |
           echo "$HOME/.cabal/bin" >> $GITHUB_PATH
+          if [ $((GHCJSARITH)) -ne 0 ] ; then echo "/opt/ghc/8.4.4/bin" >> $GITHUB_PATH ; fi
           echo "LANG=C.UTF-8" >> $GITHUB_ENV
           echo "CABAL_DIR=$HOME/.cabal" >> $GITHUB_ENV
           echo "CABAL_CONFIG=$HOME/.cabal/config" >> $GITHUB_ENV
@@ -59,7 +73,6 @@ jobs:
           echo "ARG_BENCH=--enable-benchmarks" >> $GITHUB_ENV
           echo "HEADHACKAGE=false" >> $GITHUB_ENV
           echo "ARG_COMPILER=--ghc --with-compiler=$HC" >> $GITHUB_ENV
-          echo "GHCJSARITH=0" >> $GITHUB_ENV
         env:
           CC: ${{ matrix.compiler }}
       - name: env
@@ -90,6 +103,8 @@ jobs:
           $HC --version || true
           $HC --print-project-git-commit-id || true
           $CABAL --version || true
+          if [ $((GHCJSARITH)) -ne 0 ] ; then node --version ; fi
+          if [ $((GHCJSARITH)) -ne 0 ] ; then echo $GHCJS ; fi
       - name: update cabal index
         run: |
           $CABAL v2-update -v
@@ -155,14 +170,14 @@ jobs:
           $CABAL v2-build $ARG_COMPILER $ARG_TESTS $ARG_BENCH all --write-ghc-environment-files=always
       - name: tests
         run: |
-          $CABAL v2-test $ARG_COMPILER $ARG_TESTS $ARG_BENCH all --test-show-details=direct
+          if [ $((! GHCJSARITH)) -ne 0 ] ; then $CABAL v2-test $ARG_COMPILER $ARG_TESTS $ARG_BENCH all --test-show-details=direct ; fi
       - name: cabal check
         run: |
           cd ${PKGDIR_gha_sandbox} || false
           ${CABAL} -vnormal check
       - name: haddock
         run: |
-          $CABAL v2-haddock $ARG_COMPILER --with-haddock $HADDOCK $ARG_TESTS $ARG_BENCH all
+          if [ $((! GHCJSARITH)) -ne 0 ] ; then $CABAL v2-haddock $ARG_COMPILER --with-haddock $HADDOCK $ARG_TESTS $ARG_BENCH all ; fi
       - name: unconstrained build
         run: |
           rm -f cabal.project.local
