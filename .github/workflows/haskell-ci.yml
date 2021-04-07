@@ -30,6 +30,30 @@ jobs:
             allow-failure: false
           - compiler: ghc-8.10.4
             allow-failure: false
+          - compiler: ghc-8.10.1
+            allow-failure: false
+          - compiler: ghc-8.8.3
+            allow-failure: false
+          - compiler: ghc-8.6.5
+            allow-failure: false
+          - compiler: ghc-8.4.4
+            allow-failure: false
+          - compiler: ghc-8.2.2
+            allow-failure: false
+          - compiler: ghc-8.0.2
+            allow-failure: false
+          - compiler: ghc-7.10.3
+            allow-failure: false
+          - compiler: ghc-7.8.4
+            allow-failure: false
+          - compiler: ghc-7.6.3
+            allow-failure: false
+          - compiler: ghc-7.4.2
+            allow-failure: false
+          - compiler: ghc-7.2.2
+            allow-failure: false
+          - compiler: ghc-7.0.4
+            allow-failure: false
       fail-fast: false
     steps:
       - name: apt
@@ -110,7 +134,8 @@ jobs:
       - name: initial cabal.project for sdist
         run: |
           touch cabal.project
-          echo "packages: $GITHUB_WORKSPACE/source/." >> cabal.project
+          if [ $((HCNUMVER >= 81004)) -ne 0 ] ; then echo "packages: $GITHUB_WORKSPACE/source/." >> cabal.project ; fi
+          if [ $((HCNUMVER < 81004)) -ne 0 ] ; then echo "packages: $GITHUB_WORKSPACE/source/./heaps" >> cabal.project ; fi
           cat cabal.project
       - name: sdist
         run: |
@@ -124,14 +149,19 @@ jobs:
         run: |
           PKGDIR_gha_sandbox="$(find "$GITHUB_WORKSPACE/unpacked" -maxdepth 1 -type d -regex '.*/gha-sandbox-[0-9.]*')"
           echo "PKGDIR_gha_sandbox=${PKGDIR_gha_sandbox}" >> $GITHUB_ENV
+          PKGDIR_heaps="$(find "$GITHUB_WORKSPACE/unpacked" -maxdepth 1 -type d -regex '.*/heaps-[0-9.]*')"
+          echo "PKGDIR_heaps=${PKGDIR_heaps}" >> $GITHUB_ENV
           touch cabal.project
           touch cabal.project.local
-          echo "packages: ${PKGDIR_gha_sandbox}" >> cabal.project
-          echo "package gha-sandbox" >> cabal.project
-          echo "    ghc-options: -Werror=missing-methods" >> cabal.project
+          if [ $((HCNUMVER >= 81004)) -ne 0 ] ; then echo "packages: ${PKGDIR_gha_sandbox}" >> cabal.project ; fi
+          if [ $((HCNUMVER < 81004)) -ne 0 ] ; then echo "packages: ${PKGDIR_heaps}" >> cabal.project ; fi
+          if [ $((HCNUMVER >= 81004)) -ne 0 ] ; then echo "package gha-sandbox" >> cabal.project ; fi
+          if [ $((HCNUMVER >= 81004)) -ne 0 ] ; then echo "    ghc-options: -Werror=missing-methods" >> cabal.project ; fi
+          if [ $((HCNUMVER >= 80200 && HCNUMVER < 81004)) -ne 0 ] ; then echo "package heaps" >> cabal.project ; fi
+          if [ $((HCNUMVER >= 80200 && HCNUMVER < 81004)) -ne 0 ] ; then echo "    ghc-options: -Werror=missing-methods" >> cabal.project ; fi
           cat >> cabal.project <<EOF
           EOF
-          $HCPKG list --simple-output --names-only | perl -ne 'for (split /\s+/) { print "constraints: $_ installed\n" unless /^(gha-sandbox)$/; }' >> cabal.project.local
+          $HCPKG list --simple-output --names-only | perl -ne 'for (split /\s+/) { print "constraints: $_ installed\n" unless /^(gha-sandbox|heaps)$/; }' >> cabal.project.local
           cat cabal.project
           cat cabal.project.local
       - name: dump install plan
@@ -156,11 +186,13 @@ jobs:
           $CABAL v2-build $ARG_COMPILER $ARG_TESTS $ARG_BENCH all --write-ghc-environment-files=always
       - name: tests
         run: |
-          $CABAL v2-test $ARG_COMPILER $ARG_TESTS $ARG_BENCH all --test-show-details=direct
+          if [ $((HCNUMVER >= 81004)) -ne 0 ] ; then $CABAL v2-test $ARG_COMPILER $ARG_TESTS $ARG_BENCH all --test-show-details=direct ; fi
       - name: cabal check
         run: |
-          cd ${PKGDIR_gha_sandbox} || false
-          ${CABAL} -vnormal check
+          if [ $((HCNUMVER >= 81004)) -ne 0 ] ; then cd ${PKGDIR_gha_sandbox} || false ; fi
+          if [ $((HCNUMVER >= 81004)) -ne 0 ] ; then ${CABAL} -vnormal check ; fi
+          if [ $((HCNUMVER < 81004)) -ne 0 ] ; then cd ${PKGDIR_heaps} || false ; fi
+          if [ $((HCNUMVER < 81004)) -ne 0 ] ; then ${CABAL} -vnormal check ; fi
       - name: haddock
         run: |
           $CABAL v2-haddock $ARG_COMPILER --with-haddock $HADDOCK $ARG_TESTS $ARG_BENCH all
