@@ -133,7 +133,7 @@ jobs:
           path: source
       - name: checkout submodules
         run: |
-          cd source || false
+          cd $GITHUB_WORKSPACE/source || false
           git submodule update --init
       - name: initial cabal.project for sdist
         run: |
