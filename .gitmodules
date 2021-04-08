@@ -1,3 +1,3 @@
-[submodule "heaps"]
-	path = heaps
-	url = https://github.com/ekmett/heaps
+[submodule "singletons"]
+	path = singletons
+	url = https://github.com/goldfirere/singletons
