@@ -59,10 +59,11 @@ jobs:
       - name: apt
         run: |
           apt-get update
-          apt-get install -y --no-install-recommends gnupg ca-certificates dirmngr curl git software-properties-common
+          apt-get install -y --no-install-recommends gnupg ca-certificates dirmngr curl software-properties-common
+          apt-add-repository -y 'ppa:git-core/ppa'
           apt-add-repository -y 'ppa:hvr/ghc'
           apt-get update
-          apt-get install -y $CC cabal-install-3.4
+          apt-get install -y $CC cabal-install-3.4 git
         env:
           CC: ${{ matrix.compiler }}
       - name: Set PATH and environment variables
@@ -131,6 +132,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: source
+          submodules: true
       - name: initial cabal.project for sdist
         run: |
           touch cabal.project
