@@ -129,6 +129,8 @@ jobs:
           cabal-plan --version
       - name: checkout
         uses: actions/checkout@v2
+        with:
+          submodules: true
       - name: checkout submodules
         run: |
           git submodule update --init
