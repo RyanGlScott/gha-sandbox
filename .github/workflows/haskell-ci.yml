@@ -129,8 +129,6 @@ jobs:
           cabal-plan --version
       - name: checkout
         uses: actions/checkout@v2
-        with:
-          path: source
       - name: checkout submodules
         run: |
           cd $GITHUB_WORKSPACE/source && git submodule update --init
