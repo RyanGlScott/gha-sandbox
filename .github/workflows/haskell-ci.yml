@@ -130,10 +130,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
         with:
-          submodules: true
-      - name: checkout submodules
-        run: |
-          git submodule update --init
+          path: source
       - name: initial cabal.project for sdist
         run: |
           touch cabal.project
