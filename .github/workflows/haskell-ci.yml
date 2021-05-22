@@ -8,9 +8,9 @@
 #
 # For more information, see https://github.com/haskell-CI/haskell-ci
 #
-# version: 0.12.1
+# version: 0.13.20210525
 #
-# REGENDATA ("0.12.1",["--config=cabal.haskell-ci","github","cabal.project"])
+# REGENDATA ("0.13.20210525",["--config=cabal.haskell-ci","github","cabal.project"])
 #
 name: Haskell-CI
 on:
@@ -19,63 +19,36 @@ on:
 jobs:
   linux:
     name: Haskell-CI - Linux - ${{ matrix.compiler }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-18.04
     container:
-      image: buildpack-deps:focal
+      image: buildpack-deps:bionic
     continue-on-error: ${{ matrix.allow-failure }}
     strategy:
       matrix:
         include:
-          - compiler: ghcjs-8.4
-            allow-failure: false
           - compiler: ghc-9.0.1
             allow-failure: false
           - compiler: ghc-8.10.4
             allow-failure: false
-          - compiler: ghc-8.8.4
-            allow-failure: false
-          - compiler: ghc-8.6.5
-            allow-failure: false
-          - compiler: ghc-8.4.4
-            allow-failure: false
-          - compiler: ghc-8.2.2
-            allow-failure: false
-          - compiler: ghc-8.0.2
-            allow-failure: false
       fail-fast: false
     steps:
-      - name: Set GHCJS environment variables
-        run: |
-          if echo $CC | grep -q ghcjs; then
-          echo "GHCJS=true" >> $GITHUB_ENV
-          echo "GHCJSARITH=1" >> $GITHUB_ENV
-          else
-          echo "GHCJS=false" >> $GITHUB_ENV
-          echo "GHCJSARITH=0" >> $GITHUB_ENV
-          fi
-        env:
-          CC: ${{ matrix.compiler }}
       - name: apt
         run: |
           apt-get update
           apt-get install -y --no-install-recommends gnupg ca-certificates dirmngr curl git software-properties-common
           apt-add-repository -y 'ppa:hvr/ghc'
-          if [ $((GHCJSARITH)) -ne 0 ] ; then apt-add-repository -y 'ppa:hvr/ghcjs' ; fi
-          if [ $((GHCJSARITH)) -ne 0 ] ; then curl -sSL "https://deb.nodesource.com/gpgkey/nodesource.gpg.key" | apt-key add - ; fi
-          if [ $((GHCJSARITH)) -ne 0 ] ; then apt-add-repository -y 'deb https://deb.nodesource.com/node_10.x focal main' ; fi
           apt-get update
-          if [ $((GHCJSARITH)) -ne 0 ] ; then apt-get install -y $CC cabal-install-3.4 ghc-8.4.4 nodejs ; else apt-get install -y $CC cabal-install-3.4 ; fi
+          apt-get install -y $CC cabal-install-3.4
         env:
           CC: ${{ matrix.compiler }}
       - name: Set PATH and environment variables
         run: |
           echo "$HOME/.cabal/bin" >> $GITHUB_PATH
-          if [ $((GHCJSARITH)) -ne 0 ] ; then echo "/opt/ghc/8.4.4/bin" >> $GITHUB_PATH ; fi
           echo "LANG=C.UTF-8" >> $GITHUB_ENV
           echo "CABAL_DIR=$HOME/.cabal" >> $GITHUB_ENV
           echo "CABAL_CONFIG=$HOME/.cabal/config" >> $GITHUB_ENV
           HCDIR=$(echo "/opt/$CC" | sed 's/-/\//')
-          if [ $((GHCJSARITH)) -ne 0 ] ; then HCNAME=ghcjs ; else HCNAME=ghc ; fi
+          HCNAME=ghc
           HC=$HCDIR/bin/$HCNAME
           echo "HC=$HC" >> $GITHUB_ENV
           echo "HCPKG=$HCDIR/bin/$HCNAME-pkg" >> $GITHUB_ENV
@@ -87,6 +60,7 @@ jobs:
           echo "ARG_BENCH=--enable-benchmarks" >> $GITHUB_ENV
           echo "HEADHACKAGE=false" >> $GITHUB_ENV
           echo "ARG_COMPILER=--$HCNAME --with-compiler=$HC" >> $GITHUB_ENV
+          echo "GHCJSARITH=0" >> $GITHUB_ENV
         env:
           CC: ${{ matrix.compiler }}
       - name: env
@@ -117,8 +91,6 @@ jobs:
           $HC --version || true
           $HC --print-project-git-commit-id || true
           $CABAL --version || true
-          if [ $((GHCJSARITH)) -ne 0 ] ; then node --version ; fi
-          if [ $((GHCJSARITH)) -ne 0 ] ; then echo $GHCJS ; fi
       - name: update cabal index
         run: |
           $CABAL v2-update -v
@@ -135,12 +107,10 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: source
-          submodules: "true"
       - name: initial cabal.project for sdist
         run: |
           touch cabal.project
-          if [ $((! GHCJSARITH && HCNUMVER >= 81000)) -ne 0 ] ; then echo "packages: $GITHUB_WORKSPACE/source/." >> cabal.project ; fi
-          echo "packages: $GITHUB_WORKSPACE/source/./singletons/singletons" >> cabal.project
+          echo "packages: $GITHUB_WORKSPACE/source/." >> cabal.project
           cat cabal.project
       - name: sdist
         run: |
@@ -154,19 +124,14 @@ jobs:
         run: |
           PKGDIR_gha_sandbox="$(find "$GITHUB_WORKSPACE/unpacked" -maxdepth 1 -type d -regex '.*/gha-sandbox-[0-9.]*')"
           echo "PKGDIR_gha_sandbox=${PKGDIR_gha_sandbox}" >> $GITHUB_ENV
-          PKGDIR_singletons="$(find "$GITHUB_WORKSPACE/unpacked" -maxdepth 1 -type d -regex '.*/singletons-[0-9.]*')"
-          echo "PKGDIR_singletons=${PKGDIR_singletons}" >> $GITHUB_ENV
           touch cabal.project
           touch cabal.project.local
-          if [ $((! GHCJSARITH && HCNUMVER >= 81000)) -ne 0 ] ; then echo "packages: ${PKGDIR_gha_sandbox}" >> cabal.project ; fi
-          echo "packages: ${PKGDIR_singletons}" >> cabal.project
-          if [ $((! GHCJSARITH && HCNUMVER >= 81000)) -ne 0 ] ; then echo "package gha-sandbox" >> cabal.project ; fi
-          if [ $((! GHCJSARITH && HCNUMVER >= 81000)) -ne 0 ] ; then echo "    ghc-options: -Werror=missing-methods" >> cabal.project ; fi
-          if [ $((GHCJSARITH || ! GHCJSARITH && HCNUMVER >= 80200)) -ne 0 ] ; then echo "package singletons" >> cabal.project ; fi
-          if [ $((GHCJSARITH || ! GHCJSARITH && HCNUMVER >= 80200)) -ne 0 ] ; then echo "    ghc-options: -Werror=missing-methods" >> cabal.project ; fi
+          echo "packages: ${PKGDIR_gha_sandbox}" >> cabal.project
+          echo "package gha-sandbox" >> cabal.project
+          echo "    ghc-options: -Werror=missing-methods" >> cabal.project
           cat >> cabal.project <<EOF
           EOF
-          $HCPKG list --simple-output --names-only | perl -ne 'for (split /\s+/) { print "constraints: $_ installed\n" unless /^(gha-sandbox|singletons)$/; }' >> cabal.project.local
+          $HCPKG list --simple-output --names-only | perl -ne 'for (split /\s+/) { print "constraints: $_ installed\n" unless /^(gha-sandbox)$/; }' >> cabal.project.local
           cat cabal.project
           cat cabal.project.local
       - name: dump install plan
@@ -191,16 +156,14 @@ jobs:
           $CABAL v2-build $ARG_COMPILER $ARG_TESTS $ARG_BENCH all --write-ghc-environment-files=always
       - name: tests
         run: |
-          if [ $((! GHCJSARITH)) -ne 0 ] ; then $CABAL v2-test $ARG_COMPILER $ARG_TESTS $ARG_BENCH all --test-show-details=direct ; fi
+          $CABAL v2-test $ARG_COMPILER $ARG_TESTS $ARG_BENCH all --test-show-details=direct
       - name: cabal check
         run: |
-          if [ $((! GHCJSARITH && HCNUMVER >= 81000)) -ne 0 ] ; then cd ${PKGDIR_gha_sandbox} || false ; fi
-          if [ $((! GHCJSARITH && HCNUMVER >= 81000)) -ne 0 ] ; then ${CABAL} -vnormal check ; fi
-          cd ${PKGDIR_singletons} || false
+          cd ${PKGDIR_gha_sandbox} || false
           ${CABAL} -vnormal check
       - name: haddock
         run: |
-          if [ $((! GHCJSARITH)) -ne 0 ] ; then $CABAL v2-haddock $ARG_COMPILER --with-haddock $HADDOCK $ARG_TESTS $ARG_BENCH all ; fi
+          $CABAL v2-haddock $ARG_COMPILER --with-haddock $HADDOCK $ARG_TESTS $ARG_BENCH all
       - name: unconstrained build
         run: |
           rm -f cabal.project.local
