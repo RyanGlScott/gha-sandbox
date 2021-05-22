@@ -1,1 +1,3 @@
-distribution:   bionic
+distribution:          bionic
+irc-channels:          irc.libera.chat#haskell-lens
+irc-if-in-origin-repo: True
