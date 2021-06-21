@@ -32,7 +32,7 @@ jobs:
         with:
           channel: "#haskell-lens"
           message: "\x0313gha-sandbox\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The build succeeded."
-          nickname: github-actions
+          nickname: RyanGlScott-bot
           sasl_password: ${{ secrets.IRC_BOT_PASSWORD }}
           server: irc.libera.chat
       - name: IRC failure notification (irc.libera.chat#haskell-lens)
@@ -41,7 +41,7 @@ jobs:
         with:
           channel: "#haskell-lens"
           message: "\x0313gha-sandbox\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The build failed."
-          nickname: github-actions
+          nickname: RyanGlScott-bot
           sasl_password: ${{ secrets.IRC_BOT_PASSWORD }}
           server: irc.libera.chat
   linux:
