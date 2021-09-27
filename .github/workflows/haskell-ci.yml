@@ -96,10 +96,8 @@ jobs:
           repository hackage.haskell.org
             url: http://hackage.haskell.org/
           EOF
-          cat >> $CABAL_CONFIG <<EOF
-          program-default-options
-            ghc-options: -optl-no-pie
-          EOF
+          if [ $((HCNUMVER < 90000)) -ne 0 ] ; then echo "program-default-options" >> $CABAL_CONFIG ; fi
+          if [ $((HCNUMVER < 90000)) -ne 0 ] ; then echo "  ghc-options: -optl-no-pie" >> $CABAL_CONFIG ; fi
           cat $CABAL_CONFIG
       - name: versions
         run: |
