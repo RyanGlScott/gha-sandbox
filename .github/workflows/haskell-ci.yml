@@ -95,7 +95,7 @@ jobs:
             prefix: $CABAL_DIR
           repository hackage.haskell.org
             url: http://hackage.haskell.org/
-          ghc-options: -optl-no-pie
+          ghc-options: -optc-no-pie -optl-no-pie
           EOF
           cat $CABAL_CONFIG
       - name: versions
