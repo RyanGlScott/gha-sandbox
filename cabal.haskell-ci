@@ -1,3 +1,1 @@
 distribution:          bionic
-irc-channels:          irc.libera.chat#haskell-lens
-irc-password:          ${{ secrets.IRC_BOT_PASSWORD }}
