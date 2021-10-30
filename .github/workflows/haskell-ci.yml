@@ -93,6 +93,9 @@ jobs:
           repository hackage.haskell.org
             url: http://hackage.haskell.org/
           EOF
+          cat >> $CABAL_CONFIG <<EOF
+          jobs: 2
+          EOF
           cat $CABAL_CONFIG
       - name: versions
         run: |
