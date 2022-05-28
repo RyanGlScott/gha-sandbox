@@ -184,7 +184,7 @@ jobs:
 
       - name: copy exe
         run: |
-          cp $(cabal list-bin exe:gha-sandbox) gha-sandbox
+          cp $(${CABAL} list-bin exe:gha-sandbox) gha-sandbox
       - uses: actions/upload-artifact@v2
         with:
           name: gha-sandbox
