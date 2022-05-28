@@ -174,10 +174,10 @@ jobs:
 
       - name: copy exe
         run: |
-          cp $(${CABAL} list-bin $ARG_COMPILER $ARG_TESTS $ARG_BENCH exe:gha-sandbox) gha-sandbox
+          cp $(${CABAL} list-bin $ARG_COMPILER $ARG_TESTS $ARG_BENCH exe:gha-sandbox-exe) gha-sandbox-exe
       - uses: actions/upload-artifact@v2
         with:
-          name: gha-sandbox
-          path: "gha-sandbox"
+          name: gha-sandbox-exe
+          path: "gha-sandbox-exe"
           if-no-files-found: error
           retention-days: 1
