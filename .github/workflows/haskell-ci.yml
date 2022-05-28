@@ -181,3 +181,13 @@ jobs:
         run: |
           rm -f cabal.project.local
           $CABAL v2-build $ARG_COMPILER --disable-tests --disable-benchmarks all
+
+      - name: copy exe
+        run: |
+          cp $(cabal list-bin exe:gha-sandbox) gha-sandbox
+      - uses: actions/upload-artifact@v2
+        with:
+          name: gha-sandbox
+          path: "gha-sandbox"
+          if-no-files-found: error
+          retention-days: 1
