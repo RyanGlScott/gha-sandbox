@@ -161,31 +161,13 @@ jobs:
         run: |
           $CABAL v2-build $ARG_COMPILER --disable-tests --disable-benchmarks --dependencies-only -j2 all
           $CABAL v2-build $ARG_COMPILER $ARG_TESTS $ARG_BENCH --dependencies-only -j2 all
-        working-directory: source
       - name: build
         run: |
           $CABAL v2-build $ARG_COMPILER $ARG_TESTS $ARG_BENCH all --write-ghc-environment-files=always
-        working-directory: source
       - name: cabal check
         run: |
           cd ${PKGDIR_gha_sandbox} || false
           ${CABAL} -vnormal check
-        working-directory: source
       - name: haddock
         run: |
           $CABAL v2-haddock $ARG_COMPILER --with-haddock $HADDOCK $ARG_TESTS $ARG_BENCH all
-        working-directory: source
-
-      - name: copy exe
-        run: |
-          pwd
-          ls -alh
-          ${CABAL} list-bin $ARG_COMPILER $ARG_TESTS $ARG_BENCH exe:gha-sandbox-exe
-          cp $(${CABAL} list-bin $ARG_COMPILER $ARG_TESTS $ARG_BENCH -v0 exe:gha-sandbox-exe) gha-sandbox-exe
-        working-directory: source
-      - uses: actions/upload-artifact@v2
-        with:
-          name: gha-sandbox-exe
-          path: "source/gha-sandbox-exe"
-          if-no-files-found: error
-          retention-days: 1
