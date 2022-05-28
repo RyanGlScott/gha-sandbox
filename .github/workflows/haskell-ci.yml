@@ -175,7 +175,7 @@ jobs:
       - name: copy exe
         run: |
           ${CABAL} list-bin $ARG_COMPILER $ARG_TESTS $ARG_BENCH exe:gha-sandbox-exe
-          cp $(${CABAL} list-bin $ARG_COMPILER $ARG_TESTS $ARG_BENCH exe:gha-sandbox-exe) gha-sandbox-exe
+          cp "$(${CABAL} list-bin $ARG_COMPILER $ARG_TESTS $ARG_BENCH exe:gha-sandbox-exe)" gha-sandbox-exe
       - uses: actions/upload-artifact@v2
         with:
           name: gha-sandbox-exe
