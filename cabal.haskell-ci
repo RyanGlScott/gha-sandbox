@@ -1,1 +1,3 @@
-distribution:          bionic
+distribution:           bionic
+no-tests-no-benchmarks: False
+unconstrained:          False
