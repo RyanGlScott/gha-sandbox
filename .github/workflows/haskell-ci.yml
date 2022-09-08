@@ -16,6 +16,12 @@ jobs:
         with:
           ghc-version: 8.10.7
 
+      - name: Post GHC installation hackery
+        shell: bash
+        run: |
+          cabal user-config update -a "extra-include-dirs:"
+          cabal user-config update -a "extra-lib-dirs:"
+
       - name: Debugging
         shell: bash
         run: |
