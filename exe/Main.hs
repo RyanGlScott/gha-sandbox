@@ -1,10 +1,6 @@
-{-# LANGUAGE TemplateHaskell #-}
 module Main (main) where
 
-import Development.GitRev
+import MyLib (someFunc)
 
 main :: IO ()
-main = putStrLn $ unlines
-  [ "Branch: " ++ $(gitBranch)
-  , "Commit: " ++ $(gitHash)
-  ]
+main = someFunc
