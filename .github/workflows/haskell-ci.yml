@@ -16,6 +16,16 @@ jobs:
         with:
           ghc-version: 8.10.7
 
+      - name: Debugging
+        shell: bash
+        run: |
+          echo $PATH
+          echo $LIBRARY_PATH
+          echo $C_INCLUDE_PATH
+          cat "/c/cabal/config" || true
+          cat "$CABAL_DIR/config" || true
+
       - name: Build
         shell: bash
-        run: cabal build
+        run: |
+          cabal build
