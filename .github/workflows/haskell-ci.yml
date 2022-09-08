@@ -1,3 +1,7 @@
+name: GHA-Sandbox
+on:
+  - push
+  - pull_request
 jobs:
   windows:
     name: Windows GHC test
