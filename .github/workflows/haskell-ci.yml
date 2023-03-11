@@ -4,7 +4,7 @@ on:
   - pull_request
 jobs:
   windows:
-    name: Windows GHC test
+    name: Windows Python test
     runs-on: windows-2019
     steps:
       - name: Checkout
@@ -22,16 +22,22 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Debugging (bash)
-        shell: bash
-        run: |
-          echo $PATH
-          ls $pythonLocation
-          ls $Python_ROOT_DIR
-
       - name: Debugging (msys2)
         shell: msys2 {0}
         run: |
           echo $PATH
           ls $pythonLocation
-          ls $Python_ROOT_DIR
+          which -a python
+          which -a python3
+          type -a python
+          type -a python3
+
+      - name: Debugging (bash)
+        shell: bash
+        run: |
+          echo $PATH
+          ls $pythonLocation
+          which -a python
+          which -a python3
+          type -a python
+          type -a python3
