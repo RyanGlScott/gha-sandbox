@@ -10,28 +10,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Set up GHC
-        uses: haskell/actions/setup@v1
-        id: setup-haskell
+      - name: Install MSYS2
+        uses: msys2/setup-msys2@v2
         with:
-          ghc-version: 8.10.7
+          update: true
+          msystem: MINGW64
+          path-type: inherit
 
-      - name: Post GHC installation hackery
-        shell: bash
-        run: |
-          cabal user-config update -a "extra-include-dirs: \"\""
-          cabal user-config update -a "extra-lib-dirs: \"\""
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
-      - name: Debugging
+      - name: Debugging (bash)
         shell: bash
         run: |
           echo $PATH
-          echo $LIBRARY_PATH
-          echo $C_INCLUDE_PATH
-          cat "/c/cabal/config" || true
-          cat "$CABAL_DIR/config" || true
+          ls $pythonLocation
+          ls $Python_ROOT_DIR
 
-      - name: Build
-        shell: bash
+      - name: Debugging (msys2)
+        shell: msys2 {0}
         run: |
-          cabal build
+          echo $PATH
+          ls $pythonLocation
+          ls $Python_ROOT_DIR
