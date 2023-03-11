@@ -10,6 +10,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Uninstall Chocolatey's MinGW
+        run: |
+          choco uninstall mingw --force
+
       - name: Install MSYS2
         uses: msys2/setup-msys2@v2
         with:
