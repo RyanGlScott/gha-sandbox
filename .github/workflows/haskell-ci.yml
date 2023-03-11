@@ -16,6 +16,8 @@ jobs:
           update: true
           msystem: MINGW64
           path-type: inherit
+          install: |
+            mingw-w64-x86_64-gcc
 
       - name: Install Python
         uses: actions/setup-python@v4
@@ -27,17 +29,14 @@ jobs:
         run: |
           echo $PATH
           ls $pythonLocation
-          which -a python
-          which -a python3
           type -a python
+          python --version
           type -a python3
-
-      - name: Debugging (bash)
-        shell: bash
-        run: |
-          echo $PATH
-          ls $pythonLocation
-          which -a python
-          which -a python3
-          type -a python
-          type -a python3
+          python3 --version
+          type -a cmake
+          cmake --version
+          type -a gcc
+          ls /c/hostedtoolcache/windows/Python/3.10.10/x86
+          gcc --version
+          gcc -Wl,--version
+          gcc -fuse-ld=gold -Wl,--version
