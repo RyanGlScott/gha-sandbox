@@ -13,7 +13,7 @@ jobs:
       - name: Install dependencies (Ubuntu)
         run: |
           sudo apt-get update
-          sudo apt-get install flex
+          sudo apt-get install libfl-dev
 
       - name: Debugging
         shell: bash
@@ -21,4 +21,3 @@ jobs:
           flex --version
           ls /usr/bin
           ls /usr/include
-          find /usr -iname "FlexLexer.h"
