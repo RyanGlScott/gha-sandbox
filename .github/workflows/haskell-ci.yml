@@ -4,47 +4,15 @@ on:
   - pull_request
 jobs:
   windows:
-    name: Windows Python test
-    runs-on: windows-2019
+    name: Linux flex test
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Uninstall Chocolatey's MinGW
-        run: |
-          choco uninstall mingw --force
-
-      - name: Install MSYS2
-        uses: msys2/setup-msys2@v2
-        with:
-          update: true
-          msystem: MINGW64
-          path-type: inherit
-          install: |
-            mingw-w64-x86_64-gcc
-
-      # - name: Install Python
-      #   uses: actions/setup-python@v4
-      #   with:
-      #     python-version: '3.9'
-
       - name: Debugging (msys2)
-        shell: msys2 {0}
+        shell: bash
         run: |
-          # echo $PATH
-          # ls $pythonLocation
-          # type -a python
-          # python --version
-          # type -a python3
-          # python3 --version
-          # type -a cmake
-          # cmake --version
-          # type -a gcc
-          # ls /c/hostedtoolcache/windows/Python/3.10.10/x86
-          # gcc --version
-          # gcc -Wl,--version
-          # gcc -fuse-ld=gold -Wl,--version
-          echo "RGS 1"
-          gcc test.c -o test.exe
-          echo "RGS 2"
-          gcc -fuse-ld=gold test.c -o test.exe
+          flex --version
+          ls /usr/bin
+          ls /usr/include
