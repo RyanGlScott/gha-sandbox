@@ -10,7 +10,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Debugging (msys2)
+      - name: Install dependencies (Ubuntu)
+        run: |
+          sudo apt-get update
+          sudo apt-get install flex
+
+      - name: Debugging
         shell: bash
         run: |
           flex --version
