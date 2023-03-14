@@ -21,3 +21,4 @@ jobs:
           flex --version
           ls /usr/bin
           ls /usr/include
+          find /usr -iname "FlexLexer.h"
