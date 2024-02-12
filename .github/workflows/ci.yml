@@ -12,8 +12,9 @@ jobs:
 
       - name: Teach Clang about Homebrew paths (macOS ARM64)
         run: |
-          echo "CPATH=/opt/homebrew/include" >> $GITHUB_ENV
-          echo "LIBRARY_PATH=/opt/homebrew/lib" >> $GITHUB_ENV
+          echo "lol"
+          # echo "CPATH=/opt/homebrew/include" >> $GITHUB_ENV
+          # echo "LIBRARY_PATH=/opt/homebrew/lib" >> $GITHUB_ENV
 
       - name: Debugging information
         run: |
