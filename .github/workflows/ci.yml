@@ -15,6 +15,11 @@ jobs:
           echo "CPATH=/opt/homebrew/include" >> $GITHUB_ENV
           echo "LIBRARY_PATH=/opt/homebrew/lib" >> $GITHUB_ENV
 
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+
       - name: Debugging information
         run: |
           file /usr/bin/cc
