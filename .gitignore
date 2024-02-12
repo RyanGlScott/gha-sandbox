@@ -1,3 +1,7 @@
+test-ffi.dll
+test-ffi.dylib
+test-ffi.so
+
 dist
 dist-*
 cabal-dev

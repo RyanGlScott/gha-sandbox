@@ -1,0 +1,26 @@
+name: GHA-Sandbox
+on:
+  - push
+  - pull_request
+jobs:
+  windows:
+    name: macOS GMP test
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Teach Clang about Homebrew paths (macOS ARM64)
+        run: |
+          echo "CPATH=/opt/homebrew/include" >> $GITHUB_ENV
+          echo "LIBRARY_PATH=/opt/homebrew/lib" >> $GITHUB_ENV
+
+      - name: Debugging information
+        run: |
+          which cc
+          file cc
+          file /opt/homebrew/Cellar/gmp/6.3.0/lib/libgmp.10.dylib
+
+      - name: Make it
+        run: |
+          make test-ffi
