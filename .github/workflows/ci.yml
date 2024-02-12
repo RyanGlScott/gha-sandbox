@@ -17,8 +17,7 @@ jobs:
 
       - name: Debugging information
         run: |
-          which cc
-          file cc
+          file /usr/bin/cc
           file /opt/homebrew/Cellar/gmp/6.3.0/lib/libgmp.10.dylib
 
       - name: Make it
