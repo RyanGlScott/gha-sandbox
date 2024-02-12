@@ -15,21 +15,6 @@ jobs:
           echo "CPATH=/opt/homebrew/include" >> $GITHUB_ENV
           echo "LIBRARY_PATH=/opt/homebrew/lib" >> $GITHUB_ENV
 
-      - name: Install GHC
-        uses: haskell/actions/setup@v2
-        with:
-          ghc-version: '9.2.8'
-
-      - name: Install Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.11'
-
-      - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.1.2
-        with:
-          poetry-version: 1.4.2
-
       - name: Debugging information
         run: |
           file /usr/bin/cc
