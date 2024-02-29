@@ -1,6 +1,6 @@
 module MyLib (someFunc) where
 
-import Control.Lens ()
+import Data.Distributive ()
 
 -- | This is a function.
 someFunc :: IO ()
