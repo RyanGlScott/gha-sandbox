@@ -32,5 +32,6 @@ jobs:
           ghc-version: ${{ matrix.ghc-version }}
           cabal-version: ${{ matrix.cabal }}
 
-      - shell: bash
-        run: ghc --info
+      - name: Build
+        shell: bash
+        run: cabal build
