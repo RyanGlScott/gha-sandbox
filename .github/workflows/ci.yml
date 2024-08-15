@@ -15,15 +15,24 @@ jobs:
         ghc-version: ["9.4.8"]
         cabal: [ '3.10.3.0' ]
     steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
+      - name: Try linkers
+        shell: bash
+        run: |
+          type ld.lld || true
+          ld.lld --version || true
+          type lld || true
+          lld --version || true
+          brew --prefix llvm || true
 
-      - uses: haskell-actions/setup@v2
-        id: setup-haskell
-        with:
-          ghc-version: ${{ matrix.ghc-version }}
-          cabal-version: ${{ matrix.cabal }}
+      # - uses: actions/checkout@v2
+      #   with:
+      #     submodules: true
 
-      - shell: bash
-        run: ghc --info
+      # - uses: haskell-actions/setup@v2
+      #   id: setup-haskell
+      #   with:
+      #     ghc-version: ${{ matrix.ghc-version }}
+      #     cabal-version: ${{ matrix.cabal }}
+
+      # - shell: bash
+      #   run: ghc --info
