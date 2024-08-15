@@ -18,8 +18,8 @@ jobs:
       - name: Install LLVM 15
         shell: bash
         run: |
-          brew install llvm@15
-          LD="$(brew --prefix llvm@15)/bin/lld"
+          curl -sSL https://github.com/llvm/llvm-project/releases/download/llvmorg-15.0.7/clang+llvm-15.0.7-arm64-apple-darwin22.0.tar.xz -o llvm.tar.xz && tar xf llvm.tar.xz && mv clang+llvm-* llvm
+          LD="$PWD/llvm/bin"
           echo "LD=$LD" >> $GITHUB_ENV
 
       - uses: actions/checkout@v2
@@ -31,6 +31,9 @@ jobs:
         with:
           ghc-version: ${{ matrix.ghc-version }}
           cabal-version: ${{ matrix.cabal }}
+
+      - shell: bash
+        run: ghc --info
 
       - name: Build
         shell: bash
