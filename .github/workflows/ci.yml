@@ -18,10 +18,8 @@ jobs:
       - name: Try linkers
         shell: bash
         run: |
-          type $(brew --prefix llvm)/bin/ld.lld || true
-          $(brew --prefix llvm)/bin/ld.lld --version || true
-          type $(brew --prefix llvm)/bin/lld || true
-          $(brew --prefix llvm)/bin/lld --version || true
+          type clang || true
+          ls $(brew --prefix llvm)/bin/ || true
 
       # - uses: actions/checkout@v2
       #   with:
