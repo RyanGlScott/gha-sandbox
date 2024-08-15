@@ -18,8 +18,8 @@ jobs:
       - name: Try linkers
         shell: bash
         run: |
-          type clang || true
-          ls $(brew --prefix llvm)/bin/ || true
+          ls /usr/bin || true
+          ls $(brew --prefix)/bin || true
 
       # - uses: actions/checkout@v2
       #   with:
