@@ -15,23 +15,22 @@ jobs:
         ghc-version: ["9.4.8"]
         cabal: [ '3.10.3.0' ]
     steps:
-      - name: Try linkers
+      - name: Install LLVM 15
         shell: bash
         run: |
           brew install llvm@15
-          ls $(brew --prefix llvm@15)/bin || true
-          $(brew --prefix llvm@15)/bin/lld --version || true
-          $(brew --prefix llvm@15)/bin/ld.lld --version || true
+          LD="$(brew --prefix llvm@15)/bin/lld"
+          echo "LD=$LD" >> $GITHUB_ENV
 
-      # - uses: actions/checkout@v2
-      #   with:
-      #     submodules: true
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
 
-      # - uses: haskell-actions/setup@v2
-      #   id: setup-haskell
-      #   with:
-      #     ghc-version: ${{ matrix.ghc-version }}
-      #     cabal-version: ${{ matrix.cabal }}
+      - uses: haskell-actions/setup@v2
+        id: setup-haskell
+        with:
+          ghc-version: ${{ matrix.ghc-version }}
+          cabal-version: ${{ matrix.cabal }}
 
-      # - shell: bash
-      #   run: ghc --info
+      - shell: bash
+        run: ghc --info
