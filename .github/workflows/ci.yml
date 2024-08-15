@@ -18,8 +18,9 @@ jobs:
       - name: Try linkers
         shell: bash
         run: |
-          ls /usr/bin || true
-          ls $(brew --prefix)/bin || true
+          ls /usr/local/opt/llvm/bin || true
+          /usr/local/opt/llvm/bin/lld --version || true
+          /usr/local/opt/llvm/bin/ld.lld --version || true
 
       # - uses: actions/checkout@v2
       #   with:
