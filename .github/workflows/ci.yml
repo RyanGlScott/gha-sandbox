@@ -35,7 +35,7 @@ jobs:
 
       - name: sed hackery
         shell: bash
-        run: sed -i '' 's/("Merge objects command", "ld.lld")/("Merge objects command", "ld")/' $(ghc --print-libdir)/settings
+        run: sed -i -E '' 's/(\("Merge\ objects\ command",")[^"]+("\))/\1ld\2/' $(ghc --print-libdir)/settings
 
       - shell: bash
         run: ghc --info
