@@ -18,8 +18,9 @@ jobs:
       - name: Install LLVM 15
         shell: bash
         run: |
-          curl -sSL https://github.com/llvm/llvm-project/releases/download/llvmorg-15.0.7/clang+llvm-15.0.7-arm64-apple-darwin22.0.tar.xz -o llvm.tar.xz && tar xf llvm.tar.xz && mv clang+llvm-* llvm
-          LD="$PWD/llvm/bin/ld.lld"
+          brew install llvm@15
+          LD="$(brew --prefix llvm@15)/bin/ld.lld"
+          $LD --version
           echo "LD=$LD" >> $GITHUB_ENV
 
       - uses: actions/checkout@v2
