@@ -15,13 +15,21 @@ jobs:
         ghc-version: ["9.4.8"]
         cabal: [ '3.10.3.0' ]
     steps:
+      - name: Install gcc
+        shell: bash
+        run: |
+          brew install aarch64-elf-gcc
+          GCC="$(brew --prefix aarch64-elf-gcc)/bin/gcc"
+          GXX="$(brew --prefix aarch64-elf-gcc)/bin/g++"
+          echo "GCC=$GCC" >> $GITHUB_ENV
+          echo "GXX=$GXX" >> $GITHUB_ENV
+
       - name: Install LLVM 15
         shell: bash
         run: |
           brew install llvm@15
-          LD="$(brew --prefix llvm@15)/bin/ld.lld"
-          $LD --version
-          echo "LD=$LD" >> $GITHUB_ENV
+          LD_LLD="$(brew --prefix llvm@15)/bin/ld.lld"
+          echo "LD_LLD=$LD_LLD" >> $GITHUB_ENV
 
       - uses: actions/checkout@v2
         with:
@@ -35,7 +43,18 @@ jobs:
 
       - name: sed hackery
         shell: bash
-        run: sed -i.bak -E 's/(\("Merge\ objects\ command",\ ")[^"]+("\))/\1ld\2/' $(ghc --print-libdir)/settings
+        run: |
+          sed -i.bak -E 's/(\("C\ compiler\ command",\ ")[^"]*("\))/\1${GCC}\2/' $(ghc --print-libdir)/settings
+          sed -i.bak -E 's/(\("C\+\+\ compiler\ command",\ ")[^"]*("\))/\1${GXX}\2/' $(ghc --print-libdir)/settings
+          # Pass `-fuse-ld=lld` to gcc when linking.
+          sed -i.bak -E 's/(\("C\ compiler\ link\ flags",\ ")[^"]*("\))/\1-fuse-ld=lld\2/' $(ghc --print-libdir)/settings
+          # Remove C/C++ compiler flags which gcc doesn't understand (namely,
+          # `--target=arm64-apple-darwin`).
+          sed -i.bak -E 's/(\("C\ compiler\ flags",\ ")[^"]*("\))/\1\2/' $(ghc --print-libdir)/settings
+          sed -i.bak -E 's/(\("C\+\+\ compiler\ flags",\ ")[^"]*("\))/\1\2/' $(ghc --print-libdir)/settings
+          # Switch the linker used for merging objects from Apple's ld to LLVM's
+          # ld.lld.
+          sed -i.bak -E 's/(\("Merge\ objects\ command",\ ")[^"]*("\))/\1${LD_LLD}\2/' $(ghc --print-libdir)/settings
 
       - shell: bash
         run: ghc --info
