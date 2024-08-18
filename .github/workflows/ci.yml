@@ -19,8 +19,8 @@ jobs:
         shell: bash
         run: |
           brew install gcc
-          GCC="$(brew --prefix gcc)/bin/gcc"
-          GXX="$(brew --prefix gcc)/bin/g++"
+          GCC="$(brew --prefix)/bin/gcc"
+          GXX="$(brew --prefix)/bin/g++"
           echo "GCC=$GCC" >> $GITHUB_ENV
           echo "GXX=$GXX" >> $GITHUB_ENV
 
