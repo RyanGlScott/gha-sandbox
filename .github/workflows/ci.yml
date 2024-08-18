@@ -44,17 +44,17 @@ jobs:
       - name: sed hackery
         shell: bash
         run: |
-          sed -i.bak -E 's/(\("C\ compiler\ command",\ ")[^"]*("\))/\1${GCC}\2/' $(ghc --print-libdir)/settings
-          sed -i.bak -E 's/(\("C\+\+\ compiler\ command",\ ")[^"]*("\))/\1${GXX}\2/' $(ghc --print-libdir)/settings
+          sed -i.bak -E "s|(\(\"C\ compiler\ command\",\ \")[^\"]*(\"\))|\1${GCC}\2|" $(ghc --print-libdir)/settings
+          sed -i.bak -E "s|(\(\"C\+\+\ compiler\ command\",\ \")[^\"]*(\"\))|\1${GXX}\2|" $(ghc --print-libdir)/settings
           # Pass `-fuse-ld=lld` to gcc when linking.
-          sed -i.bak -E 's/(\("C\ compiler\ link\ flags",\ ")[^"]*("\))/\1-fuse-ld=lld\2/' $(ghc --print-libdir)/settings
+          sed -i.bak -E "s|(\(\"C\ compiler\ link\ flags\",\ \")[^\"]*(\"\))|\1-fuse-ld=lld\2|" $(ghc --print-libdir)/settings
           # Remove C/C++ compiler flags which gcc doesn't understand (namely,
           # `--target=arm64-apple-darwin`).
-          sed -i.bak -E 's/(\("C\ compiler\ flags",\ ")[^"]*("\))/\1\2/' $(ghc --print-libdir)/settings
-          sed -i.bak -E 's/(\("C\+\+\ compiler\ flags",\ ")[^"]*("\))/\1\2/' $(ghc --print-libdir)/settings
+          sed -i.bak -E "s|(\(\"C\ compiler\ flags\",\ \")[^\"]*(\"\))|\1\2|" $(ghc --print-libdir)/settings
+          sed -i.bak -E "s|(\(\"C\+\+\ compiler\ flags\",\ \")[^\"]*(\"\))|\1\2|" $(ghc --print-libdir)/settings
           # Switch the linker used for merging objects from Apple's ld to LLVM's
           # ld.lld.
-          sed -i.bak -E 's/(\("Merge\ objects\ command",\ ")[^"]*("\))/\1${LD_LLD}\2/' $(ghc --print-libdir)/settings
+          sed -i.bak -E "s|(\(\"Merge\ objects\ command\",\ \")[^\"]*(\"\))|\1${LD_LLD}\2|" $(ghc --print-libdir)/settings
 
       - shell: bash
         run: ghc --info
