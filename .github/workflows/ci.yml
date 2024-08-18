@@ -15,12 +15,12 @@ jobs:
         ghc-version: ["9.4.8"]
         cabal: [ '3.10.3.0' ]
     steps:
-      - name: Install gcc
+      - name: Install GCC 14
         shell: bash
         run: |
-          brew install gcc
-          GCC="$(brew --prefix)/bin/gcc"
-          GXX="$(brew --prefix)/bin/g++"
+          brew install gcc@14
+          GCC="$(brew --prefix gcc@14)/bin/gcc-14"
+          GXX="$(brew --prefix gcc@14)/bin/g++-14"
           echo "GCC=$GCC" >> $GITHUB_ENV
           echo "GXX=$GXX" >> $GITHUB_ENV
 
