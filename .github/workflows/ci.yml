@@ -59,6 +59,12 @@ jobs:
       - shell: bash
         run: ghc --info
 
+      - name: Experiments
+        shell: bash
+        run: |
+          cat ~/.ghcup/bin/hsc2hs || true
+          grep -rn "target=arm64\-apple\-darwin" ~/.ghcup || true
+
       - name: Build
         shell: bash
         run: cabal build
