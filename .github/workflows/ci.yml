@@ -18,9 +18,9 @@ jobs:
       - name: Install gcc
         shell: bash
         run: |
-          brew install aarch64-elf-gcc
-          GCC="$(brew --prefix aarch64-elf-gcc)/bin/gcc"
-          GXX="$(brew --prefix aarch64-elf-gcc)/bin/g++"
+          brew install gcc
+          GCC="$(brew --prefix gcc)/bin/gcc"
+          GXX="$(brew --prefix gcc)/bin/g++"
           echo "GCC=$GCC" >> $GITHUB_ENV
           echo "GXX=$GXX" >> $GITHUB_ENV
 
