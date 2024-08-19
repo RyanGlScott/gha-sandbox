@@ -56,6 +56,8 @@ jobs:
           # Switch the linker used for merging objects from Apple's ld to LLVM's
           # ld.lld.
           sed -i.bak -E "s|(\(\"Merge\ objects\ command\",\ \")[^\"]*(\"\))|\1${LD_LLD}\2|" $(ghc --print-libdir)/settings
+          # GCC doesn't support the -filelist option.
+          sed -i.bak -E "s|(\(\"ld\ supports\ filelist\",\ \")[^\"]*(\"\))|\1NO\2|" $(ghc --print-libdir)/settings
 
       - name: Check our work
         shell: bash
