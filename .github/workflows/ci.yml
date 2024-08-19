@@ -15,22 +15,6 @@ jobs:
         ghc-version: ["9.4.8"]
         cabal: [ '3.10.3.0' ]
     steps:
-      - name: Install GCC 14
-        shell: bash
-        run: |
-          brew install gcc@14
-          GCC="$(brew --prefix gcc@14)/bin/gcc-14"
-          GXX="$(brew --prefix gcc@14)/bin/g++-14"
-          echo "GCC=$GCC" >> $GITHUB_ENV
-          echo "GXX=$GXX" >> $GITHUB_ENV
-
-      # - name: Install LLVM 15
-      #   shell: bash
-      #   run: |
-      #     brew install llvm@15
-      #     LD_LLD="$(brew --prefix llvm@15)/bin/ld.lld"
-      #     echo "LD_LLD=$LD_LLD" >> $GITHUB_ENV
-
       - uses: actions/checkout@v2
         with:
           submodules: true
@@ -41,6 +25,15 @@ jobs:
           ghc-version: ${{ matrix.ghc-version }}
           cabal-version: ${{ matrix.cabal }}
 
+      - name: Install GCC 14
+        shell: bash
+        run: |
+          brew install gcc@14
+          GCC="$(brew --prefix gcc@14)/bin/gcc-14"
+          GXX="$(brew --prefix gcc@14)/bin/g++-14"
+          echo "GCC=$GCC" >> $GITHUB_ENV
+          echo "GXX=$GXX" >> $GITHUB_ENV
+
       - name: sed hackery
         shell: bash
         run: |
@@ -48,26 +41,16 @@ jobs:
           sed -i.bak -E "s|(\(\"C\+\+\ compiler\ command\",\ \")[^\"]*(\"\))|\1${GXX}\2|" $(ghc --print-libdir)/settings
           # Pass `-fuse-ld=lld` to gcc when linking.
           sed -i.bak -E "s|(\(\"C\ compiler\ link\ flags\",\ \")[^\"]*(\"\))|\1-fuse-ld=lld\2|" $(ghc --print-libdir)/settings
-          # Remove C/C++ compiler flags which gcc doesn't understand (namely,
-          # `--target=arm64-apple-darwin`).
+          # Remove C/C++ compiler flags which gcc doesn't understand (namely, `--target=arm64-apple-darwin`).
           sed -i.bak -E "s|(\(\"C\ compiler\ flags\",\ \")[^\"]*(\"\))|\1\2|" $(ghc --print-libdir)/settings
           sed -i.bak -E "s|(\(\"C\+\+\ compiler\ flags\",\ \")[^\"]*(\"\))|\1\2|" $(ghc --print-libdir)/settings
           sed -i.bak -E "s|(HSC2HS_EXTRA=\")[^\"]*(\")|\1\2|" ~/.ghcup/ghc/${{ matrix.ghc-version }}/bin/hsc2hs-ghc-${{ matrix.ghc-version }}
-          # # Switch the linker used for merging objects from Apple's ld to LLVM's
-          # # ld.lld.
-          # sed -i.bak -E "s|(\(\"Merge\ objects\ command\",\ \")[^\"]*(\"\))|\1${LD_LLD}\2|" $(ghc --print-libdir)/settings
 
       - name: Check our work
         shell: bash
         run: |
           ghc --info
           cat ~/.ghcup/ghc/${{ matrix.ghc-version }}/bin/hsc2hs-ghc-${{ matrix.ghc-version }}
-
-      # - name: Experiments
-      #   shell: bash
-      #   run: |
-      #     cat ~/.ghcup/bin/hsc2hs || true
-      #     grep -rn "target=arm64\-apple\-darwin" ~/.ghcup || true
 
       - name: Build
         shell: bash
