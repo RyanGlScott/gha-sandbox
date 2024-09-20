@@ -17,11 +17,11 @@ jobs:
         with:
           submodules: true
 
-      - name: Install Clang/LLVM 14
+      - name: Install Clang/LLVM 13
         shell: bash
         run: |
-          brew install llvm@14
-          echo "$(brew --prefix)/opt/llvm@14/bin" >> "$GITHUB_PATH"
+          brew install llvm@13
+          echo "$(brew --prefix)/opt/llvm@13/bin" >> "$GITHUB_PATH"
 
       - name: Clang version
         shell: bash
