@@ -12,46 +12,21 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-14]
-        ghc-version: ["9.4.8"]
-        cabal: [ '3.10.3.0' ]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
-      - uses: haskell-actions/setup@v2
-        id: setup-haskell
-        with:
-          ghc-version: ${{ matrix.ghc-version }}
-          cabal-version: ${{ matrix.cabal }}
-
-      - name: Install GCC 14
+      - name: Install Clang/LLVM 12
         shell: bash
         run: |
-          brew install gcc@14
-          GCC="$(brew --prefix gcc@14)/bin/gcc-14"
-          GXX="$(brew --prefix gcc@14)/bin/g++-14"
-          echo "GCC=$GCC" >> $GITHUB_ENV
-          echo "GXX=$GXX" >> $GITHUB_ENV
+          brew install llvm@12
+          echo "$(brew --prefix)/opt/llvm@12/bin" >> "$GITHUB_PATH"
 
-      - name: sed hackery
+      - name: Clang version
         shell: bash
-        run: |
-          sed -i.bak -E "s|(\(\"C\ compiler\ command\",\ \")[^\"]*(\"\))|\1${GCC}\2|" $(ghc --print-libdir)/settings
-          sed -i.bak -E "s|(\(\"C\+\+\ compiler\ command\",\ \")[^\"]*(\"\))|\1${GXX}\2|" $(ghc --print-libdir)/settings
-          # Pass `-fuse-ld=lld` to gcc when linking.
-          sed -i.bak -E "s|(\(\"C\ compiler\ link\ flags\",\ \")[^\"]*(\"\))|\1-fuse-ld=lld\2|" $(ghc --print-libdir)/settings
-          # Remove C/C++ compiler flags which gcc doesn't understand (namely, `--target=arm64-apple-darwin`).
-          sed -i.bak -E "s|(\(\"C\ compiler\ flags\",\ \")[^\"]*(\"\))|\1\2|" $(ghc --print-libdir)/settings
-          sed -i.bak -E "s|(\(\"C\+\+\ compiler\ flags\",\ \")[^\"]*(\"\))|\1\2|" $(ghc --print-libdir)/settings
-          sed -i.bak -E "s|(HSC2HS_EXTRA=\")[^\"]*(\")|\1\2|" ~/.ghcup/ghc/${{ matrix.ghc-version }}/bin/hsc2hs-ghc-${{ matrix.ghc-version }}
+        run: clang --version
 
-      - name: Check our work
+      - name: Compile simple C file
         shell: bash
-        run: |
-          ghc --info
-          cat ~/.ghcup/ghc/${{ matrix.ghc-version }}/bin/hsc2hs-ghc-${{ matrix.ghc-version }}
-
-      - name: Build
-        shell: bash
-        run: cabal build
+        run: clang test.c
