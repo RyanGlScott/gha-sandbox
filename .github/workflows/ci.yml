@@ -21,7 +21,7 @@ jobs:
         shell: bash
         run: |
           brew install llvm@14
-          echo "$(brew --prefix)/opt/llvm@12/bin" >> "$GITHUB_PATH"
+          echo "$(brew --prefix)/opt/llvm@14/bin" >> "$GITHUB_PATH"
 
       - name: Clang version
         shell: bash
