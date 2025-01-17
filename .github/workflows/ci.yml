@@ -12,13 +12,28 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-22.04]
+        ghc-version: ["9.4.8"]
+        cabal: [ '3.10.2.0' ]
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
+
+      - uses: haskell/actions/setup@v2
+        id: setup-haskell
+        with:
+          ghc-version: ${{ matrix.ghc-version }}
+          cabal-version: ${{ matrix.cabal }}
 
       - name: Check environment variables
         shell: bash
         run: |
           echo $LANG
           echo $LC_ALL
+
+      - name: Test readFile
+        shell: bash
+        run: |
+          runghc ReadFile.hs
+          ghc ReadFile.hs -o ReadFile
+          ./ReadFile
