@@ -11,22 +11,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-14]
+        os: [ubuntu-22.04]
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
 
-      - name: Install Clang/LLVM 13
+      - name: Check environment variables
         shell: bash
         run: |
-          brew install llvm@13
-          echo "$(brew --prefix)/opt/llvm@13/bin" >> "$GITHUB_PATH"
-
-      - name: Clang version
-        shell: bash
-        run: clang --version
-
-      - name: Compile simple C file
-        shell: bash
-        run: clang test.c
+          echo $LANG
+          echo $LC_ALL
