@@ -22,6 +22,10 @@ jobs:
         shell: bash
         run: clang test.c -o test
 
+      - name: Clear quarantine flag
+        shell: bash
+        run: xattr -d com.apple.quarantine test
+
       - name: Upload executable
         uses: actions/upload-artifact@v6
         with:
