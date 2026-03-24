@@ -13,11 +13,19 @@ jobs:
       matrix:
         os: [macos-15]
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout
+        uses: actions/checkout@v6
         with:
           submodules: true
 
-      - name: Test
+      - name: Compile executable
         shell: bash
-        run: |
-          echo "Hello, World"
+        run: clang test.c -o test
+
+      - name: Upload executable
+        uses: actions/upload-artifact@v6
+        with:
+          name: test
+          path: "test"
+          if-no-files-found: error
+          retention-days: 1
