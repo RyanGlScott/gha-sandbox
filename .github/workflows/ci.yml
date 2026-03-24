@@ -24,7 +24,7 @@ jobs:
 
       - name: Clear quarantine flag
         shell: bash
-        run: xattr -d com.apple.quarantine test
+        run: xattr -d com.apple.quarantine test || true
 
       - name: Upload executable
         uses: actions/upload-artifact@v6
