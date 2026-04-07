@@ -22,19 +22,29 @@ jobs:
         shell: bash
         run: clang test.c -o test
 
+      - name: Sign binary
+        env:
+          BUNDLE_ID: "com.ryanglscott.testbinary"
+          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          codesign -s "$TEAM_ID" -f --timestamp -o runtime -i "$BUNDLE_ID" test
+
+      - name: Zip binary
+        run: |
+          zip test.zip test
+
       - name: Notarize and staple
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
           TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          BINARY: "test"
         run: |
-          xcrun notarytool submit "$BINARY" \
+          xcrun notarytool submit test.zip \
             --apple-id "$APPLE_ID" \
             --password "$APPLE_PASSWORD" \
             --team-id "$TEAM_ID" \
             --wait
-          xcrun stapler staple "$BINARY"
+          xcrun stapler staple test
 
       - name: Upload executable
         uses: actions/upload-artifact@v6
