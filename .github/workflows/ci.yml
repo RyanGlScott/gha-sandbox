@@ -33,7 +33,8 @@ jobs:
           IDENTITY_NAME: ${{ secrets.APPLE_P12_IDENTITY_NAME }}
         run: |
           codesign \
-            --deep --force --options runtime \
+            --force \
+            --options runtime \
             --sign "$IDENTITY_NAME" \
             test
 
