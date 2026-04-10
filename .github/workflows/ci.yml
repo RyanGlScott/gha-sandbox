@@ -41,7 +41,7 @@ jobs:
         run: |
           zip test.zip test
 
-      - name: Notarize and staple
+      - name: Notarize binary
         env:
           KEY_ID: ${{ secrets.APPLE_P8_KEY_ID }}
           ISSUER_ID: ${{ secrets.APPLE_P8_ISSUER_ID }}
@@ -53,7 +53,6 @@ jobs:
             --key-id "$KEY_ID" \
             --issuer "$ISSUER_ID" \
             --wait
-          xcrun stapler staple test
 
       - name: Upload executable
         uses: actions/upload-artifact@v6
