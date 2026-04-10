@@ -22,12 +22,20 @@ jobs:
         shell: bash
         run: clang test.c -o test
 
+      - name: Import signing certificate
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.APPLE_P12_CERTIFICATE }}
+          p12-password: ${{ secrets.APPLE_P12_PASSWORD }}
+
       - name: Sign binary
         env:
-          BUNDLE_ID: "com.ryanglscott.testbinary"
-          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          IDENTITY_NAME: ${{ secrets.APPLE_P12_IDENTITY_NAME }}
         run: |
-          codesign -s "$TEAM_ID" -f --timestamp -o runtime -i "$BUNDLE_ID" test
+          codesign \
+            --deep --force --options runtime \
+            --sign "$IDENTITY_NAME" \
+            test
 
       - name: Zip binary
         run: |
@@ -35,14 +43,15 @@ jobs:
 
       - name: Notarize and staple
         env:
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
-          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          KEY_ID: ${{ secrets.APPLE_P8_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APPLE_P8_ISSUER_ID }}
+          API_KEY: ${{ secrets.APPLE_P8_API_KEY }}
         run: |
+          echo "$API_KEY" > "AuthKey_$KEY_ID.p8"
           xcrun notarytool submit test.zip \
-            --apple-id "$APPLE_ID" \
-            --password "$APPLE_PASSWORD" \
-            --team-id "$TEAM_ID" \
+            --key "AuthKey_$KEY_ID.p8" \
+            --key-id "$KEY_ID" \
+            --issuer "$ISSUER_ID" \
             --wait
           xcrun stapler staple test
 
